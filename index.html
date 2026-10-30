@@ -14,6 +14,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Serif:ital,wght@1,400&amp;display=swap">
 <style>
 html{scroll-behavior:smooth;scroll-padding-top:89px}
+.story-dot{height:8px;width:8px;border-radius:999px;border:none;padding:0;cursor:pointer;background:rgba(10,27,46,.2);transition:width .3s,background .3s}
+.story-dot.is-active{width:28px;background:#1667B8}
 @media (min-width:480px){.prod-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}.prod-grid>a:nth-child(5){grid-column:2/span 2}}
 @media (min-width:480px) and (max-width:900px){.prod-grid>a{grid-column:span 2}.prod-grid>a:nth-child(5){grid-column:2/span 2}}
 @media (min-width:480px) and (max-width:1179px){.prod-grid>a:nth-child(5){flex-direction:row!important}.prod-grid>a:nth-child(5)>div:nth-child(1){height:auto!important;width:42%;flex:none;min-height:200px}.prod-grid>a:nth-child(5)>div:nth-child(2){height:auto!important;width:4px;flex:none}.prod-grid>a:nth-child(5)>div:nth-child(3){justify-content:center}}
@@ -344,7 +346,7 @@ input[type=range]{accent-color:#6DB6F7}
       </sc-for>
     </div>
     <div style="display:flex;justify-content:center;gap:8px;margin-top:24px">
-      <sc-for list="{{ dots }}" as="d" hint-placeholder-count="4"><button onClick="{{ d.go }}" aria-label="Go to story {{ d.n }}" style="height:8px;width:{{ d.w }};border-radius:999px;border:none;padding:0;cursor:pointer;background:{{ d.bg }};transition:width .3s,background .3s"></button></sc-for>
+      <sc-for list="{{ dots }}" as="d" hint-placeholder-count="4"><button onClick="{{ d.go }}" aria-label="Go to story {{ d.n }}" class="{{ d.cls }}"></button></sc-for>
     </div>
   </div>
 </section>
@@ -498,7 +500,7 @@ class Component extends DCLogic {
     ];
     return {
       stories: SS, storyRef: (this.storyRef = this.storyRef || React.createRef()),
-      dots: SS.map((s, i) => ({ n: i + 1, w: i === (this.state.sIdx || 0) ? '28px' : '8px', bg: i === (this.state.sIdx || 0) ? '#1667B8' : 'rgba(10,27,46,.2)', go: () => this.goStory(i) })),
+      dots: SS.map((s, i) => ({ n: i + 1, cls: i === (this.state.sIdx || 0) ? 'story-dot is-active' : 'story-dot', go: () => this.goStory(i) })),
       trackScroll: () => { const el = this.storyRef.current; if (!el) return; const w = el.firstElementChild.getBoundingClientRect().width + 16; const atEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 4; const i = atEnd ? SS.length - 1 : Math.min(SS.length - 1, Math.round(el.scrollLeft / w)); if (i !== (this.state.sIdx || 0)) this.setState({ sIdx: i }); },
       pause: () => { this.paused = true; }, resume: () => { this.paused = false; },
       prevStory: () => this.slideStory(-1, true), nextStory: () => this.slideStory(1, true),
